@@ -1,0 +1,10 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import vm from 'node:vm'
+import { fileURLToPath } from 'node:url'
+export const root=path.resolve(process.env.GLOSS_SOURCE_ROOT||fileURLToPath(new URL('../',import.meta.url)))
+export const read=name=>fs.readFileSync(path.join(root,name),'utf8')
+export const sourceBlock=(source,from,to)=>{const start=source.indexOf(from),end=source.indexOf(to,start+from.length);if(start<0||end<=start)throw Error('Test adapter needs updating: '+from);return source.slice(start,end)}
+export function fakeReact(){const tag=Symbol('test-element');return{Fragment:'fragment',memo:value=>value,createElement(type,props,...children){return{$$typeof:tag,type,key:props?.key??null,props:{...(props||{}),children:children.flat(Infinity).filter(v=>v!=null&&v!==false)}}},cloneElement(node,props,...children){return{...node,props:{...node.props,...props,children:children.flat(Infinity).filter(v=>v!=null&&v!==false)}}},isValidElement:node=>node?.$$typeof===tag,useState:initial=>[typeof initial==='function'?initial():initial,()=>{}],useEffect(){},useLayoutEffect(){},useRef:value=>({current:value})}}
+export function loadClient(overrides={}){const React=fakeReact();let entry,plugin;const scope={__ModuleLoader__:{load(value){entry=value;plugin=value.factory(name=>{if(name!=='react')throw Error('Unexpected client dependency');return React})}}};const context={window:scope,document:{},localStorage:{getItem:()=>null},TextEncoder,TextDecoder,Uint8Array,ArrayBuffer,DataView,ReadableStream,Response,AbortController,DOMException,URL,setTimeout,clearTimeout,console,...overrides};const source=read('client.js'),marker='    // plugin\n';if(source.split(marker).length!==2)throw Error('Client test boundary changed');const expose='    window.__test={canonicalDocumentId,rebindDocumentSnapshot,ensureTranslation,cancelTranslations,renderMarkdown}\n';vm.runInNewContext(source.replace(marker,expose+marker),context,{filename:'client.js'});return{entry,plugin,scope,context,React,source,api:scope.__test}}
+export function plain(value){return JSON.parse(JSON.stringify(value))}

@@ -1,0 +1,6 @@
+- insert:
+    - id: literature-reader
+      name: '@local/literature-reader'
+      config:
+        maxChunkChars: 7000
+        maxParagraphsPerChunk: 12

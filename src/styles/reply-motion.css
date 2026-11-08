@@ -1,0 +1,6 @@
+
+      .lr-stream-tail{display:inline;opacity:1;filter:none;animation:lr-stream-tail-in 90ms cubic-bezier(.2,.65,.3,1) both;animation-delay:var(--lr-tail-delay,0ms)}
+      @keyframes lr-stream-tail-in{from{opacity:.45;filter:blur(3.5px)}to{opacity:1;filter:blur(0)}}
+      .lr-stream-tail.is-static{animation:none;opacity:1;filter:none}
+      @media(prefers-reduced-motion:reduce),(prefers-reduced-transparency:reduce),(prefers-contrast:more){.lr-stream-tail{animation:none!important;opacity:1!important;filter:none!important}}
+      

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "entry": "src/client.template.js",
+  "output": "client.js",
+  "scripts": [
+    { "token": "__GLOSS_LIBRARY_DRAWER__", "file": "src/library-drawer.js" },
+    { "token": "__GLOSS_WELCOME_CITATIONS__", "file": "src/welcome-citations.js" }
+  ],
+  "styles": [
+    { "token": "__GLOSS_STYLE_LIBRARY__", "file": "src/styles/library.css" },
+    { "token": "__GLOSS_STYLE_REPLY_MOTION__", "file": "src/styles/reply-motion.css" },
+    { "token": "__GLOSS_STYLE_MATERIAL__", "file": "src/styles/material.css" },
+    { "token": "__GLOSS_STYLE_BASE__", "file": "src/styles/base.css" },
+    { "token": "__GLOSS_STYLE_SHELL__", "file": "src/styles/shell.css" },
+    { "token": "__GLOSS_STYLE_POPUP__", "file": "src/styles/popup.css" }
+  ]
+}

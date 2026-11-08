@@ -1,0 +1,705 @@
+
+/* Gloss · selected material 1, 清透薄缘.
+   Append after SHELL_CSS and feature CSS. No event/state/scroll logic changes.
+   The reading well adds one 8px concentric inset; source/control geometry stays put.
+   The 3px masked rim owns the 8px blur. Reading surfaces remain stable and opaque. */
+@property --gloss-thin-edge-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+.lr-root {
+  --gloss-thin-fill: 1.5%;
+  --gloss-thin-band: 3px;
+  --gloss-thin-center-blur: 1px;
+  --gloss-thin-edge-blur: 8px;
+  --gloss-thin-rim-level: 68%;
+  --gloss-thin-surface: var(--lr-shell-ground, var(--dsw-alias-bg-base, #fff));
+  --gloss-thin-ink: var(--lr-shell-ink, var(--dsw-alias-label-primary, #25272d));
+  --gloss-thin-rim: color-mix(in srgb, var(--gloss-thin-surface) 50%, white);
+  --gloss-thin-shadow: color-mix(in srgb, var(--gloss-thin-ink) 2.5%, transparent);
+  --gloss-thin-radius: 28px;
+  --gloss-thin-inset: 8px;
+  --gloss-thin-inner-radius: calc(var(--gloss-thin-radius) - var(--gloss-thin-inset));
+  --gloss-thin-bevel:
+    inset 0 1px 0 color-mix(in srgb, var(--gloss-thin-rim) 64%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--gloss-thin-ink) 2.5%, transparent);
+}
+
+/* Keep every existing transform, pointer guard, source anchor and focus behavior. */
+.lr-root .lr-reader-chrome > .lr-title-pill,
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle),
+.lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle),
+.lr-root .lr-tab-lens,
+.lr-root .lrcp.is-direct > .lrcp-rail,
+.lr-root .lrcp-glass-thumb,
+.lr-root .lr-reference-return,
+.lr-root .lr-pop.is-compact .lr-glass-orb {
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb, var(--gloss-thin-rim) var(--gloss-thin-rim-level), transparent);
+  background: color-mix(in srgb, var(--gloss-thin-surface) var(--gloss-thin-fill), transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: var(--gloss-thin-bevel), 0 1px 4px var(--gloss-thin-shadow);
+  corner-shape: round;
+}
+
+/* Controls need their own containing block; the lens/thumb/orb stay absolute. */
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle),
+.lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle) {
+  position: relative;
+}
+
+.lr-root .lr-reader-chrome > .lr-title-pill::before,
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle)::before,
+.lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle)::before,
+.lr-root .lr-tab-lens::before,
+.lr-root .lrcp.is-direct > .lrcp-rail::before,
+.lr-root .lrcp-glass-thumb::before,
+.lr-root .lr-reference-return::before,
+.lr-root .lr-pop.is-compact .lr-glass-orb::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: var(--gloss-thin-band);
+  border-radius: inherit;
+  background: transparent;
+  backdrop-filter: blur(var(--gloss-thin-center-blur)) saturate(1.04);
+  -webkit-backdrop-filter: blur(var(--gloss-thin-center-blur)) saturate(1.04);
+  pointer-events: none;
+}
+
+.lr-root .lr-reader-chrome > .lr-title-pill::after,
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle)::after,
+.lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle)::after,
+.lr-root .lr-tab-lens::after,
+.lr-root .lrcp.is-direct > .lrcp-rail::after,
+.lr-root .lrcp-glass-thumb::after,
+.lr-root .lr-reference-return::after,
+.lr-root .lr-pop.is-compact .lr-glass-orb::after {
+  --gloss-thin-edge-x: var(--lr-glass-x, 50%);
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+  transition: opacity .18s ease, --gloss-thin-edge-x .16s ease;
+}
+
+/* Mask support is progressive: no mask means no filled/blurred overlay. */
+@supports (mask-composite: exclude) or (-webkit-mask-composite: xor) {
+  .lr-root .lr-reader-chrome > .lr-title-pill::after,
+  .lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle)::after,
+  .lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle)::after,
+  .lr-root .lr-tab-lens::after,
+  .lr-root .lrcp.is-direct > .lrcp-rail::after,
+  .lr-root .lrcp-glass-thumb::after,
+  .lr-root .lr-reference-return::after,
+  .lr-root .lr-pop.is-compact .lr-glass-orb::after {
+    padding: var(--gloss-thin-band);
+    background:
+      radial-gradient(105% 150% at var(--gloss-thin-edge-x) var(--gloss-thin-light-y, 0%),
+        color-mix(in srgb, var(--gloss-thin-rim) 48%, transparent), transparent 70%),
+      conic-gradient(from 120deg,
+        color-mix(in srgb, var(--gloss-thin-rim) 44%, transparent),
+        transparent 21%,
+        color-mix(in srgb, var(--gloss-thin-ink) 2.5%, transparent) 49%,
+        color-mix(in srgb, var(--gloss-accent, #007aff) 3%, transparent) 56%,
+        transparent 74%,
+        color-mix(in srgb, var(--gloss-thin-rim) 38%, transparent));
+    backdrop-filter: blur(var(--gloss-thin-edge-blur)) saturate(1.18);
+    -webkit-backdrop-filter: blur(var(--gloss-thin-edge-blur)) saturate(1.18);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--gloss-thin-rim) 66%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--gloss-thin-ink) 2%, transparent);
+  }
+}
+
+/* The base track is quiet. Its active lens uses the same rim as the header. */
+.lr-root .lr-tabs {
+  border-color: color-mix(in srgb, var(--gloss-thin-ink) 8%, transparent);
+  background: color-mix(in srgb, var(--gloss-thin-surface) 3%, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--gloss-thin-rim) 36%, transparent);
+}
+.lr-root .lr-tabs::before {
+  background: radial-gradient(ellipse at var(--lr-glass-x, 50%) 0%,
+    color-mix(in srgb, var(--gloss-thin-rim) 20%, transparent), transparent 65%);
+  opacity: .32;
+}
+.lr-root .lr-tabs.is-pressing { --lr-lens-stretch: 1.012; --lr-lens-height: .998; }
+.lr-root .lr-tabs.is-scrubbing { --lr-lens-stretch: 1.025; --lr-lens-height: .995; }
+.lr-root .lr-tabs.is-gliding .lr-tab-lens::after { animation: gloss-thin-glide .26s ease-out; }
+@keyframes gloss-thin-glide { 0%, 100% { opacity: .62; } 45% { opacity: .88; } }
+
+.lr-root .lrcp-glass-thumb::after { --gloss-thin-edge-x: calc(20% + var(--progress, 0) * 60%); }
+.lr-root .lrcp-slider-track { background: color-mix(in srgb, var(--gloss-thin-ink) 8%, transparent); }
+.lr-root .lrcp-slider-progress { background: color-mix(in srgb, var(--gloss-accent, #007aff) 38%, transparent); }
+.lr-root .is-dragging .lrcp-glass-thumb {
+  transform: translate(-50%, -50%) scaleX(1.045) scaleY(.99);
+  box-shadow: var(--gloss-thin-bevel), 0 1px 4px var(--gloss-thin-shadow);
+}
+
+/* Avoid a second frosted/shadowed shell beneath the compact translation orb. */
+.lr-root .lr-pop.is-compact .lr-pop-head {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+.lr-root .lr-pop.is-compact .lr-glass-orb:hover { transform: none; }
+
+/* A stable reading well: outer radius28 minus inset8 gives the inner radius20.
+   This is an opaque reading layer, so PDF glyphs cannot double through prose. */
+.lr-root .lr-notes {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--gloss-thin-radius);
+  corner-shape: squircle;
+  border: 1px solid color-mix(in srgb, var(--gloss-thin-ink) 6%, transparent);
+  background: color-mix(in srgb, var(--gloss-thin-surface) 98%, var(--gloss-thin-ink));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  overflow: hidden;
+}
+.lr-root .lr-notes > .lr-tabs-wrap {
+  padding-inline: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+.lr-root .lr-notes > .lr-content {
+  margin: 0 var(--gloss-thin-inset) var(--gloss-thin-inset);
+  border-radius: var(--gloss-thin-inner-radius);
+  corner-shape: squircle;
+  background: var(--gloss-thin-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* DeepSeek's docked macOS sidebar would otherwise lay out the glass reading
+   pane at every intermediate grid width. Commit the grid resize in one frame. */
+html[data-platform=darwin] [data-animating]:not([data-sidebar-drawer]):has([data-global-panel] .lr-root .lr-notes:not([hidden])),
+html[data-platform=darwin] [data-animating]:not([data-sidebar-drawer]):has([data-global-panel] .lr-root .lr-notes:not([hidden])) > [data-side] {
+  transition-duration: 0s;
+}
+.lr-root.is-pane-resizing .lr-source-body {
+  overflow-anchor: none;
+}
+/* These rails sit on solid backgrounds in the native reader. Keep their
+   glass rims and gradients without sampling the translucent Electron window. */
+/* The outer frame is decorative. Leave clipping to the scrollport and use a
+   circular radius there so a live width change avoids nested clip masks. */
+html[data-platform=darwin] .lr-root .lr-body > .lr-notes {
+  corner-shape: round;
+  overflow: visible;
+}
+html[data-platform=darwin] .lr-root .lr-notes > .lr-content {
+  corner-shape: round;
+}
+html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tabs, .lr-tab-lens, .lrcp-rail),
+html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-rail)::before,
+html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-rail)::after {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.lr-root .lr-notes :is(.lr-card, .lrc-row) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+.lr-root .lr-notes .lrcp.is-direct > .lrcp-rail {
+  corner-shape: squircle;
+  border-radius: 20px;
+  box-shadow: var(--gloss-thin-bevel);
+}
+
+/* Interaction changes the light, never a large scale or a heavier shadow. */
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle):hover,
+.lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle):hover,
+.lr-root .lr-reference-return:hover {
+  background: color-mix(in srgb, var(--gloss-thin-surface) 3%, transparent);
+  box-shadow: var(--gloss-thin-bevel), 0 1px 4px var(--gloss-thin-shadow);
+}
+.lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle):active { transform: scale(.985); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-root .lr-tabs.is-gliding .lr-tab-lens::after { animation: none; }
+  .lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle):active { transform: none; }
+  .lr-root .lr-tabs { --lr-lens-stretch: 1; --lr-lens-height: 1; }
+  .lr-root .is-dragging .lrcp-glass-thumb { transform: translate(-50%, -50%); }
+  .lr-root :is(.lr-title-pill, .lr-reader-button, .lr-more-toggle, .lr-tab-lens, .lrcp-glass-thumb, .lr-reference-return)::after,
+  .lr-root .lrcp.is-direct > .lrcp-rail::after,
+  .lr-root .lr-pop.is-compact .lr-glass-orb::after { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .lr-root .lr-reader-chrome > .lr-title-pill,
+  .lr-root .lr-reader-chrome :is(.lr-reader-button, .lr-more-toggle),
+  .lr-root .lr-header-actions :is(.lr-reader-button, .lr-more-toggle),
+  .lr-root .lr-tab-lens,
+  .lr-root .lrcp.is-direct > .lrcp-rail,
+  .lr-root .lrcp-glass-thumb,
+  .lr-root .lr-reference-return,
+  .lr-root .lr-pop.is-compact .lr-glass-orb {
+    background: var(--gloss-thin-surface);
+    border-color: var(--lr-shell-control);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+  .lr-root :is(.lr-title-pill, .lr-reader-button, .lr-more-toggle, .lr-tab-lens, .lrcp-glass-thumb, .lr-reference-return)::before,
+  .lr-root :is(.lr-title-pill, .lr-reader-button, .lr-more-toggle, .lr-tab-lens, .lrcp-glass-thumb, .lr-reference-return)::after,
+  .lr-root .lrcp.is-direct > .lrcp-rail::before,
+  .lr-root .lrcp.is-direct > .lrcp-rail::after,
+  .lr-root .lr-pop.is-compact .lr-glass-orb::before,
+  .lr-root .lr-pop.is-compact .lr-glass-orb::after { display: none; }
+}
+
+/* Prepared patch only. Append after the shared material patch; not installed.
+   CSS material simulation. No PDF texture capture, WebGL or foreground filter.
+   The readable translation center is the user's explicit diffusion exception:
+   34% fill / 20px backdrop blur; controls and composer keep the clear thin center.
+   Do not apply these rules to compact/orb, header navigation or reading tabs. */
+
+.lr-pop:not(.is-compact),
+.lr-pop:not(.is-compact):is(:hover,.is-hovered,.has-focus,.is-preview) {
+  --lr-tc-surface: var(--gloss-thin-surface,var(--lr-shell-ground,var(--dsw-alias-bg-overlay)));
+  --lr-tc-ink: var(--gloss-thin-ink,var(--dsw-alias-label-primary));
+  --lr-tc-rim: var(--gloss-thin-rim,var(--dsw-alias-bg-overlay));
+  --lr-tc-band: var(--gloss-thin-band,3px);
+  --lr-tc-edge-blur: var(--gloss-thin-edge-blur,8px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+  /* Root material stays steady; existing opacity/fold interaction owns visibility. */
+  transition: border-radius .28s cubic-bezier(.2,.8,.2,1),
+    padding .28s cubic-bezier(.2,.8,.2,1),
+    max-height .28s cubic-bezier(.2,.8,.2,1);
+}
+
+.lr-pop:not(.is-compact) > .lr-pop-stage {
+  --lr-tc-fill: 34%;
+  --lr-tc-center-blur: 20px;
+  position: relative;
+  isolation: isolate;
+  border-radius: 23px;
+  background: color-mix(in srgb,var(--lr-tc-surface) var(--lr-tc-fill),transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 4px var(--gloss-thin-shadow,color-mix(in srgb,var(--lr-tc-ink) 2.5%,transparent));
+}
+
+.lr-pop:not(.is-compact) > .lr-pop-head {
+  --lr-tc-fill: 4%;
+  --lr-tc-center-blur: var(--gloss-thin-center-blur,1px);
+  position: relative;
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb,var(--lr-tc-rim) 54%,transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb,var(--lr-tc-surface) var(--lr-tc-fill),transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.lr-pop:not(.is-compact) > :is(.lr-pop-head,.lr-pop-stage)::before {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: -2;
+  inset: var(--lr-tc-band);
+  border-radius: inherit;
+  background: transparent;
+  backdrop-filter: blur(var(--lr-tc-center-blur)) saturate(1.06);
+  -webkit-backdrop-filter: blur(var(--lr-tc-center-blur)) saturate(1.06);
+  pointer-events: none;
+}
+
+.lr-pop:not(.is-compact) > :is(.lr-pop-head,.lr-pop-stage)::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  box-sizing: border-box;
+  inset: 0;
+  padding: var(--lr-tc-band);
+  border-radius: inherit;
+  background: radial-gradient(110% 170% at var(--lr-glass-x,50%) 0%,
+      color-mix(in srgb,var(--lr-tc-rim) 62%,transparent),transparent 75%),
+    linear-gradient(180deg,color-mix(in srgb,var(--lr-tc-rim) 14%,transparent),
+      transparent 48%,color-mix(in srgb,var(--lr-tc-ink) 2%,transparent));
+  backdrop-filter: blur(var(--lr-tc-edge-blur)) saturate(1.12);
+  -webkit-backdrop-filter: blur(var(--lr-tc-edge-blur)) saturate(1.12);
+  mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.lr-pop:not(.is-compact) :is(.lr-pop-body,.lr-chat-assistant,.lr-ask,.lr-followup) {
+  filter: none;
+  text-shadow: none;
+  box-shadow: none;
+}
+.lr-pop:not(.is-compact) .lr-chat-assistant,
+.lr-pop:not(.is-compact) .lr-followup {
+  background: transparent;
+}
+.lr-pop:not(.is-compact) .lr-glass-button {
+  background: color-mix(in srgb,var(--lr-tc-surface) 3%,transparent);
+  box-shadow: none;
+  transition: background .18s ease,opacity .18s ease;
+}
+.lr-pop:not(.is-compact) .lr-glass-button:hover {
+  background: color-mix(in srgb,var(--lr-tc-surface) 6%,transparent);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Extra section/form specificity beats the incumbent module CSS without !important. */
+.lr-root section.lr-research-conversation form.lr-ideas-composer,
+.lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+  --lr-tc-surface: var(--gloss-thin-surface,var(--lr-shell-ground,var(--dsw-alias-bg-overlay)));
+  --lr-tc-ink: var(--gloss-thin-ink,var(--dsw-alias-label-primary));
+  --lr-tc-rim: var(--gloss-thin-rim,var(--dsw-alias-bg-overlay));
+  --lr-tc-band: var(--gloss-thin-band,3px);
+  position: relative;
+  isolation: isolate;
+  border-radius: 24px;
+  border-color: color-mix(in srgb,var(--lr-tc-rim) 54%,transparent);
+  background: color-mix(in srgb,var(--lr-tc-surface) var(--gloss-thin-fill,1.5%),transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 4px var(--gloss-thin-shadow,color-mix(in srgb,var(--lr-tc-ink) 2.5%,transparent));
+  transform: none;
+  transition: border-color .22s ease,background .22s ease;
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+  border-color: color-mix(in srgb,var(--dsw-alias-brand-primary) 22%,var(--lr-tc-rim));
+  /* Retain the module's keyboard-only focus ring; no focus elevation. */
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer::before {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: -2;
+  inset: var(--lr-tc-band);
+  height: auto;
+  border-radius: inherit;
+  background: transparent;
+  backdrop-filter: blur(var(--gloss-thin-center-blur,1px)) saturate(1.06);
+  -webkit-backdrop-filter: blur(var(--gloss-thin-center-blur,1px)) saturate(1.06);
+  pointer-events: none;
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  box-sizing: border-box;
+  inset: 0;
+  padding: var(--lr-tc-band);
+  border-radius: inherit;
+  background: radial-gradient(110% 170% at var(--lr-glass-x,50%) 0%,
+    color-mix(in srgb,var(--lr-tc-rim) 62%,transparent),transparent 75%);
+  backdrop-filter: blur(var(--gloss-thin-edge-blur,8px)) saturate(1.12);
+  -webkit-backdrop-filter: blur(var(--gloss-thin-edge-blur,8px)) saturate(1.12);
+  mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer .lr-ideas-conversation-input {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter: none;
+  resize: none;
+}
+
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more) {
+  .lr-pop:not(.is-compact) > :is(.lr-pop-head,.lr-pop-stage),
+  .lr-root section.lr-research-conversation form.lr-ideas-composer,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+    background: var(--lr-shell-ground,var(--dsw-alias-bg-overlay));
+    box-shadow: none;
+  }
+  .lr-pop:not(.is-compact) > :is(.lr-pop-head,.lr-pop-stage)::before,
+  .lr-pop:not(.is-compact) > :is(.lr-pop-head,.lr-pop-stage)::after,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer::before,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer::after {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lr-pop:not(.is-compact),
+  .lr-pop:not(.is-compact) .lr-glass-button,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer {
+    transition: none;
+  }
+}
+
+/* Append after the selected material patches. Reading exceptions only.
+   Circles/book chip keep the thin1px center,3px rim and8px edge blur. */
+.lr-root .lr-reader-chrome > .lr-title-pill:not(.is-collapsed) {
+  --gloss-thin-fill: 4%;
+  --gloss-thin-center-blur: 6px;
+  background: color-mix(in srgb, var(--gloss-thin-surface) 4%, transparent);
+}
+.lr-root .lr-reader-chrome > .lr-title-pill:not(.is-collapsed)::before {
+  backdrop-filter: blur(6px) saturate(1.04);
+  -webkit-backdrop-filter: blur(6px) saturate(1.04);
+}
+
+/* Light translation remains34%/20px. Dark text surfaces need more shielding
+   against the white PDF beneath; the floating toolbar remains much clearer. */
+.lr-pop[data-surface=dark]:not(.is-compact) > .lr-pop-stage {
+  --lr-tc-fill: 72%;
+}
+.lr-pop[data-surface=dark]:not(.is-compact) > .lr-pop-head {
+  --lr-tc-fill: 10%;
+}
+
+/* Unsupported composite masks must never turn a rim into a full overlay. */
+.lr-pop:not(.is-compact) > :is(.lr-pop-head, .lr-pop-stage)::after,
+.lr-root section.lr-research-conversation form.lr-ideas-composer::after {
+  display: none;
+}
+@supports (mask-composite: exclude) or (-webkit-mask-composite: xor) {
+  .lr-pop:not(.is-compact) > :is(.lr-pop-head, .lr-pop-stage)::after,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer::after {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .lr-root .lr-reader-chrome > .lr-title-pill:not(.is-collapsed) {
+    background: var(--gloss-thin-surface);
+  }
+  .lr-root .lr-reader-chrome > .lr-title-pill:not(.is-collapsed)::before,
+  .lr-pop:not(.is-compact) > :is(.lr-pop-head, .lr-pop-stage)::after,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer::after {
+    display: none;
+  }
+}
+
+/* Screenshot feedback polish. Append after readability-fallback.css.
+   CSS only; reference-list styling and all interaction/state logic stay owned
+   by their existing modules. */
+
+/* Concentric translation well: outer30 - inset8 = stage22.
+   Put the reading inset on the measured content, so height/scroll calculations
+   include it rather than clipping the last lines inside an absolute scroller. */
+.lr-root .lr-pop:not(.is-compact) {
+  padding: 8px;
+}
+.lr-root .lr-pop:not(.is-compact) > .lr-pop-head {
+  margin: 0 0 10px;
+}
+.lr-root .lr-pop:not(.is-compact) > .lr-pop-stage {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 22px;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-content {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 17px 18px;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-body,
+.lr-root .lr-pop:not(.is-compact) .lr-answer,
+.lr-root .lr-pop:not(.is-compact) .lr-chat-assistant {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--dsw-alias-label-primary);
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-body {
+  padding: 0;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-chat-assistant {
+  padding: 2px 0;
+  max-width: 100%;
+}
+.lr-root .lr-pop:not(.is-compact) :is(.lr-pop-body, .lr-chat-assistant) :is(p, li) {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-content pre,
+.lr-root .lr-pop:not(.is-compact) .lr-pop-content table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.lr-root .lr-pop:not(.is-compact) .lr-pop-content table {
+  display: block;
+}
+
+/* A visible selected lens, still the same thin-rim material. The track stays
+   clear; only the selected state gains a mild blue center and a readable edge. */
+.lr-root .lr-tabs {
+  background: color-mix(in srgb, var(--gloss-thin-surface) 5%, transparent);
+  border-color: color-mix(in srgb, var(--gloss-thin-ink) 10%, transparent);
+}
+.lr-root .lr-tabs .lr-tab-lens {
+  --gloss-thin-fill: 32%;
+  background: color-mix(in srgb,
+    color-mix(in srgb, var(--gloss-thin-surface) 76%, var(--gloss-accent, #007aff))
+      var(--gloss-thin-fill), transparent);
+  border-color: color-mix(in srgb, var(--gloss-accent, #007aff) 22%, var(--gloss-thin-rim));
+  box-shadow: var(--gloss-thin-bevel), 0 1px 4px var(--gloss-thin-shadow);
+}
+.lr-root .lr-tabs .lr-tab[aria-selected=true] {
+  color: var(--gloss-accent, #007aff);
+  font-weight: 550;
+}
+.lr-root .lr-card.is-active {
+  border: 1px solid color-mix(in srgb, var(--card-line) 68%, var(--gloss-thin-surface));
+  background: color-mix(in srgb, var(--card-tint) 34%, var(--gloss-thin-surface));
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Beat the module's focus-within/:has rules locally. Pointer focus gets a
+   gentle lift, while textarea focus-visible receives a deliberate blue ring
+   on the whole composer, never the browser's dark inner input rectangle. */
+.lr-root section.lr-research-conversation form.lr-ideas-composer {
+  outline: none;
+  transition: transform .2s cubic-bezier(.2, .8, .2, 1),
+    box-shadow .2s ease, border-color .18s ease, background .2s ease;
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+  outline: none;
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--gloss-accent, #007aff) 14%, var(--gloss-thin-rim));
+  box-shadow: 0 2px 7px color-mix(in srgb, var(--gloss-thin-ink) 3.5%, transparent);
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer
+  textarea.lr-ideas-conversation-input:focus {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+  background-image: none;
+  -webkit-appearance: none;
+  caret-color: var(--dsw-alias-brand-primary);
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer
+  textarea.lr-ideas-conversation-input:focus:not(:focus-visible) {
+  outline: none;
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer:has(.lr-ideas-conversation-input:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--gloss-accent, #007aff) 62%, transparent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-root section.lr-research-conversation form.lr-ideas-composer {
+    transition: none;
+  }
+  .lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+    transform: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .lr-root .lr-tabs .lr-tab-lens {
+    background: color-mix(in srgb, var(--gloss-accent, #007aff) 12%, var(--gloss-thin-surface));
+  }
+  .lr-root section.lr-research-conversation form.lr-ideas-composer:has(.lr-ideas-conversation-input:focus-visible) {
+    outline-color: var(--gloss-accent, #007aff);
+  }
+}
+
+/* Match the accepted preview: neutral convex glass, no blue selected frame. */
+.lr-root .lr-tabs {
+  border-radius:999px;
+  border-color:color-mix(in srgb,var(--gloss-thin-ink) 8%,transparent);
+  background:color-mix(in srgb,var(--gloss-thin-surface) 4%,transparent);
+}
+.lr-root .lr-tabs .lr-tab-lens {
+  --gloss-thin-fill:18%;
+  top:-3px;
+  height:calc(100% + 6px);
+  border-radius:999px;
+  border-color:color-mix(in srgb,var(--gloss-thin-rim) 78%,transparent);
+  background:color-mix(in srgb,var(--gloss-thin-surface) 18%,transparent);
+  box-shadow:inset 0 1px 1px color-mix(in srgb,var(--gloss-thin-rim) 86%,transparent),
+    inset 0 -1px 1px color-mix(in srgb,var(--gloss-thin-ink) 3%,transparent),
+    0 2px 7px color-mix(in srgb,var(--gloss-thin-ink) 4%,transparent);
+}
+.lr-root .lr-tabs .lr-tab {
+  gap:6px;
+  font-weight:500;
+}
+.lr-root .lr-tabs .lr-tab svg {width:17px;height:17px;stroke-width:1.8}
+.lr-root .lr-tabs .lr-tab .lr-tab-label-full {display:none}
+.lr-root .lr-tabs .lr-tab::after {content:attr(data-short-label);display:inline}
+@container gloss-reader (max-width:350px) {
+  .lr-root .lr-tabs .lr-tab::after {display:none}
+}
+
+/* One transparent composer, with concentric rim and no nested input box. */
+.lr-root section.lr-research-conversation form.lr-ideas-composer {
+  border-radius:24px;
+  border-color:color-mix(in srgb,var(--gloss-thin-rim) 68%,transparent);
+  background:color-mix(in srgb,var(--gloss-thin-surface) 8%,transparent);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gloss-thin-rim) 72%,transparent),
+    0 2px 7px color-mix(in srgb,var(--gloss-thin-ink) 3.5%,transparent);
+}
+.lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within,
+.lr-root section.lr-research-conversation form.lr-ideas-composer:has(.lr-ideas-conversation-input:focus-visible) {
+  outline:none;
+  border-color:color-mix(in srgb,var(--gloss-thin-rim) 86%,transparent);
+  box-shadow:inset 0 1px 1px color-mix(in srgb,var(--gloss-thin-rim) 82%,transparent),
+    0 4px 12px color-mix(in srgb,var(--gloss-thin-ink) 6%,transparent);
+}
+
+/* Menu content receives stronger diffusion; the outer rim stays quiet. */
+.lr-root :is(.lr-head-toc .lr-toc-body,.lr-import-options,.lrc-detail) {
+  border-radius:24px;
+  border-color:color-mix(in srgb,var(--gloss-thin-rim) 58%,transparent);
+  background:linear-gradient(150deg,
+    color-mix(in srgb,var(--gloss-thin-surface) 42%,transparent),
+    color-mix(in srgb,var(--gloss-thin-surface) 32%,transparent));
+  backdrop-filter:blur(20px) saturate(1.06);
+  -webkit-backdrop-filter:blur(20px) saturate(1.06);
+  box-shadow:inset 0 1px 1px color-mix(in srgb,var(--gloss-thin-rim) 72%,transparent),
+    0 3px 12px color-mix(in srgb,var(--gloss-thin-ink) 4%,transparent);
+}
+.lr-root :is(.lr-head-toc .lr-toc-body,.lr-import-options) {padding:10px}
+.lr-root :is(.lr-head-toc .lr-toc-body button,.lr-import-options>.lr-btn) {
+  border-radius:14px;
+}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more) {
+  .lr-root .lr-tabs .lr-tab-lens,
+  .lr-root section.lr-research-conversation form.lr-ideas-composer,
+  .lr-root :is(.lr-head-toc .lr-toc-body,.lr-import-options,.lrc-detail) {
+    background:var(--gloss-thin-surface);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+  .lr-root section.lr-research-conversation form.lr-ideas-composer:has(.lr-ideas-conversation-input:focus-visible) {
+    outline:1px solid var(--gloss-thin-ink);
+    outline-offset:3px;
+  }
+}
+

@@ -1,0 +1,2 @@
+# Version used for the local PDF parsing regression suite.
+PyMuPDF==2.0
