@@ -41,7 +41,11 @@ Contextual translation, chapter navigation, and Zotero integration.</p>
 <details>
 <summary>💬 让 DeepSeek 帮你操作</summary>
 
-把[安全配置提示词](docs/INSTALL.md#agent-setup)发给 DeepSeek Harness 中能操作本机的 Agent。提示词规定了下载来源、校验步骤、允许修改的范围，以及何时应停下来。 [查看 1.1.0 验证范围](docs/INSTALL.md#verification)
+```text
+请帮我在 DeepSeek Harness 中配置 Gloss-Paper-Reader。
+```
+
+Agent 可先读取[环境要求和配置步骤](docs/INSTALL.md#agent-setup)。
 
 </details>
 
