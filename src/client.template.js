@@ -3786,6 +3786,15 @@ window.__ModuleLoader__.load({
       const [sessionBars, setSessionBars] = useState([])
       const [sessionListOpen, setSessionListOpen] = useState(false)
       const [chromeState, setChromeState] = useState(() => ({ ...initial.chromeState, titleCollapsed: false }))
+      const [darkTheme, setDarkTheme] = useState(() => document.body.hasAttribute('data-ds-dark-theme'))
+      useEffect(() => {
+        const body = document.body
+        const update = () => setDarkTheme(body.hasAttribute('data-ds-dark-theme'))
+        const observer = new MutationObserver(update)
+        observer.observe(body, { attributes: true, attributeFilter: ['data-ds-dark-theme'] })
+        update()
+        return () => observer.disconnect()
+      }, [])
       useEffect(() => { const owner = paper && paper.id; return () => { if (owner) pdfAppearanceCache.clearDocument(owner) } }, [paper && paper.id])
       const [referenceReturn, setReferenceReturn] = useState(null)
       const fileRef = useRef(null)
@@ -6335,7 +6344,8 @@ window.__ModuleLoader__.load({
         return h(TranslationCard, { popup, onClose: closePopup, onDismiss: closePopup, onCopy: copyText, getSourcePointer: () => popupPointerRef.current.documentId === popup.documentId ? popupPointerRef.current : null, onHighlight: (color, style) => setHighlight(color, style, popup.key), onPresentationChange: (value, height) => changePopupPresentation(value, height, popup.key), getPaperContext, onThreadChange: saveSelectionThread, onPopupSnapshot: (snapshot) => { const current = popupRef.current; if (current && current.key === snapshot.key && current.documentId === snapshot.documentId) recentPopupRef.current = { popup: { ...current, sessionSnapshot: snapshot }, origin: popupOriginRef.current, documentId: current.documentId } }, savedThread })
       }
 
-      const pdfAppearanceMode = pdfAppearance.mode(chromeState.pdfAppearance)
+      const pdfPalette = chromeState.pdfAppearanceOverride || 'follow'
+      const pdfAppearanceMode = pdfAppearance.mode(pdfPalette === 'follow' ? (darkTheme ? 'dark' : 'original') : pdfPalette)
       const floatingPaperChrome = Boolean(pdfDoc && sourceOpen)
       const titleCollapsed = Boolean(floatingPaperChrome && paper && chromeState.titleCollapsed)
       const titlePill = h('div', {
@@ -6420,7 +6430,7 @@ window.__ModuleLoader__.load({
             titlePill,
             h('div', { className: 'lr-reader-controls', 'aria-label': '原文阅读控制', inert: titleCollapsed ? '' : undefined, 'aria-hidden': titleCollapsed || undefined },
               h('div', { className: 'lr-pdf-mode', role: 'group', 'aria-label': 'PDF 外观' },
-                [{ id: 'original', label: '原始' }, { id: 'dark', label: '深色' }].map((item) => h('button', { key: item.id, type: 'button', className: pdfAppearanceMode === item.id ? 'is-active' : '', disabled: titleCollapsed, 'aria-label': 'PDF ' + item.label + '模式', 'aria-pressed': pdfAppearanceMode === item.id, onClick: () => setChromeState((value) => ({ ...value, pdfAppearance: item.id })) }, item.label))),
+                [{ id: 'follow', label: '跟随', name: 'PDF 跟随主题' }, { id: 'original', label: '原始', name: 'PDF 原始模式' }].map((item) => h('button', { key: item.id, type: 'button', className: pdfPalette === item.id ? 'is-active' : '', disabled: titleCollapsed, 'aria-label': item.name, 'aria-pressed': pdfPalette === item.id, onClick: () => setChromeState((value) => ({ ...value, pdfAppearanceOverride: item.id })) }, item.label))),
               h('button', { type: 'button', className: 'lr-reader-button', disabled: titleCollapsed, 'aria-label': '缩小', title: '缩小', onClick: () => zoomBy(-.1) }, h(ToolIcon, { name: 'minus' })),
               h('span', { className: 'lr-zoom' }, Math.round((effectiveScale || 1) * 100) + '%'),
               h('button', { type: 'button', className: 'lr-reader-button', disabled: titleCollapsed, 'aria-label': '放大', title: '放大', onClick: () => zoomBy(.1) }, h(ToolIcon, { name: 'plus' })),
