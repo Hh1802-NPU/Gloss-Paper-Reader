@@ -5,17 +5,25 @@ const paper = stage.querySelector('.demo-paper');
 const cover = paper.querySelector('img');
 const status = document.querySelector('#demo-status');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const compact = matchMedia('(max-width: 700px), (max-width: 920px) and (pointer: coarse)');
+const desktopPaperLabel = paper.getAttribute('aria-label');
 let inView = false;
 let started = false;
 let scheduled = 0;
 let sequence = 0;
 let automaticFlight = null;
 let drag = null;
+let suppressPaperClick = false;
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+function loadReaderFrame() {
+  if (!frame.hasAttribute('src')) frame.src = frame.dataset.src;
+}
+
 function readerReady(restart) {
-  if (!restart && frame.contentWindow?.glossPreview) return Promise.resolve(frame.contentWindow.glossPreview);
+  const preview = frame.contentWindow?.glossPreview;
+  if (preview && (!restart || preview.reset())) return Promise.resolve(preview);
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       frame.removeEventListener('load', loaded);
@@ -28,7 +36,8 @@ function readerReady(restart) {
       else reject(new Error('Gloss 演示没有加载'));
     }
     frame.addEventListener('load', loaded, { once: true });
-    if (restart) frame.contentWindow.location.reload();
+    if (restart && preview) frame.contentWindow.location.reload();
+    else loadReaderFrame();
   });
 }
 
@@ -65,7 +74,7 @@ async function flyPaper() {
     { transform: pose(0, 0, -5), opacity: 1 },
     { transform: pose(x*.55, y*.44-34, 5, 1.04), opacity: 1, offset: .57 },
     { transform: pose(x, y, 0, .64), opacity: .07 },
-  ], { duration: 1100, easing: 'cubic-bezier(.26,.64,.21,1)', fill: 'forwards' });
+  ], { duration: compact.matches ? 540 : 820, easing: 'cubic-bezier(.26,.64,.21,1)', fill: 'forwards' });
   automaticFlight = motion;
   try {
     await motion.finished;
@@ -92,13 +101,12 @@ async function playStory(dropped) {
     stage.dataset.state = 'import';
     status.textContent = '导入示例论文';
     if (!dropped && !reducedMotion.matches) {
-      await Promise.all([
-        flyPaper(),
-        delay(400).then(() => current() ? preview.run('import') : undefined),
-      ]);
+      await Promise.all([flyPaper(), preview.run('import')]);
     } else {
       await preview.run('import');
     }
+    if (!current()) return;
+    if (compact.matches) stage.dataset.state = 'opened';
     await delay(1250);
     if (!current()) return;
     stage.dataset.state = 'translate';
@@ -111,11 +119,11 @@ async function playStory(dropped) {
     await preview.run('locate');
     if (!current()) return;
     stage.dataset.state = 'complete';
-    status.textContent = '演示已完成。把 PDF 拖进阅读器可以重演。';
+    status.textContent = compact.matches ? '演示已完成。点按或拖入 PDF 可以重演。' : '演示已完成。把 PDF 拖进阅读器可以重演。';
   } catch {
     if (!current()) return;
     stage.dataset.state = 'error';
-    status.textContent = '演示未完成。把 PDF 拖进阅读器可以重试。';
+    status.textContent = compact.matches ? '示例 PDF 未打开。点按上方 PDF 重试。' : '演示未完成。把 PDF 拖进阅读器可以重试。';
   }
 }
 
@@ -124,22 +132,49 @@ function startOnView() {
   scheduled = setTimeout(() => {
     scheduled = 0;
     if (inView && !drag && !reducedMotion.matches) void playStory();
-  }, 580);
+  }, 320);
 }
 
 if ('IntersectionObserver' in window) {
+  const prepareReader = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      loadReaderFrame();
+      prepareReader.disconnect();
+    }
+  }, { rootMargin: '620px 0px' });
+  prepareReader.observe(readerWindow);
   new IntersectionObserver(entries => {
-    inView = entries[0].isIntersecting && entries[0].intersectionRatio >= .44;
+    const threshold = compact.matches ? .28 : .44;
+    inView = entries[0].isIntersecting && entries[0].intersectionRatio >= threshold;
     if (inView) startOnView();
     else {
       clearTimeout(scheduled);
       scheduled = 0;
     }
-  }, { threshold: .44, rootMargin: '0px 0px -5% 0px' }).observe(readerWindow);
-}
+  }, { threshold: [.28, .44], rootMargin: '0px 0px -5% 0px' }).observe(readerWindow);
+} else loadReaderFrame();
 frame.addEventListener('load', startOnView);
 window.addEventListener('message', event => {
-  if (event.source === frame.contentWindow && event.origin === location.origin && event.data?.type === 'gloss-preview-ready') startOnView();
+  if (event.source !== frame.contentWindow || event.origin !== location.origin) return;
+  if (event.data?.type === 'gloss-preview-ready') startOnView();
+  if (compact.matches && event.data?.type === 'gloss-preview-open' && ['waiting', 'home', 'import'].includes(stage.dataset.state)) {
+    stage.dataset.state = 'opened';
+  }
+  if (compact.matches && event.data?.type === 'gloss-preview-home' && stage.dataset.state !== 'resetting') {
+    stage.dataset.state = 'home';
+  }
+  if (event.data?.type === 'gloss-preview-interaction' && ['import', 'opened', 'translate', 'locate'].includes(stage.dataset.state)) {
+    sequence++;
+    automaticFlight?.cancel();
+    stage.dataset.state = 'complete';
+    status.textContent = '';
+  }
+  if (compact.matches && event.data?.type === 'gloss-preview-source' && Number.isFinite(event.data.text)) {
+    const top = frame.getBoundingClientRect().top + event.data.text;
+    if (top < 12 || top > innerHeight - 135) {
+      window.scrollBy({ top: top - 16, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
+  }
 });
 reducedMotion.addEventListener('change', startOnView);
 
@@ -154,19 +189,18 @@ function overReader(x, y) {
   return x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
 }
 
-function beginPaperDrag() {
+function resetReader() {
+  clearTimeout(scheduled);
+  scheduled = 0;
   const state = stage.dataset.state;
   const home = frame.contentDocument?.querySelector('.lr-welcome[data-library-open="false"]');
   const restart = Boolean(frame.contentWindow?.glossPreview && (!home || !['waiting', 'home'].includes(state)));
   const run = ++sequence;
   started = true;
-  drag.run = run;
-  drag.carrier = makeCarrier();
-  stage.classList.add('is-dragging');
   automaticFlight?.cancel();
   if (restart) stage.dataset.state = 'resetting';
   status.textContent = '回到 Gloss 主页';
-  drag.home = Promise.all([
+  const ready = Promise.all([
     readerReady(restart).then(async preview => {
       await preview.waitForHome();
       return preview;
@@ -185,6 +219,14 @@ function beginPaperDrag() {
     }
     return null;
   });
+  return { run, home: ready };
+}
+
+function beginPaperDrag() {
+  suppressPaperClick = true;
+  drag.carrier = makeCarrier();
+  stage.classList.add('is-dragging');
+  Object.assign(drag, resetReader());
 }
 
 function movePaper(x, y) {
@@ -225,6 +267,8 @@ function putPaper(inside) {
 
 paper.addEventListener('pointerdown', event => {
   if (drag || event.button !== 0) return;
+  suppressPaperClick = false;
+  if (compact.matches && event.target !== cover) return;
   takePaper(event.pointerId, event.clientX, event.clientY);
   paper.setPointerCapture(event.pointerId);
 });
@@ -237,7 +281,16 @@ paper.addEventListener('pointerup', event => {
 paper.addEventListener('lostpointercapture', event => {
   if (drag?.id === event.pointerId) putPaper(false);
 });
+paper.addEventListener('click', () => {
+  if (compact.matches && !suppressPaperClick && !['resetting', 'import'].includes(stage.dataset.state)) void playStory(resetReader());
+});
 paper.addEventListener('keydown', event => {
+  if (compact.matches && !drag && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault();
+    suppressPaperClick = false;
+    paper.click();
+    return;
+  }
   if (event.key === ' ' && !drag) {
     event.preventDefault();
     const bounds = paper.getBoundingClientRect();
@@ -262,6 +315,13 @@ paper.addEventListener('keydown', event => {
 paper.addEventListener('blur', () => {
   if (drag?.id === 'keyboard') putPaper(false);
 });
+
+function adaptPaperControl() {
+  paper.setAttribute('role', compact.matches ? 'button' : 'group');
+  paper.setAttribute('aria-label', compact.matches ? '打开示例 PDF，也可以拖进阅读器' : desktopPaperLabel);
+}
+adaptPaperControl();
+compact.addEventListener('change', adaptPaperControl);
 
 const shot = document.querySelector('[data-hero-image]');
 const scenes = [...document.querySelectorAll('[data-scroll-scene]')];
@@ -360,7 +420,7 @@ function paintScroll() {
   let active = tops.reduce((index, top, i) => top <= navLine ? i : index, -1);
   if (scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2) active = tops.length - 1;
   paintNav(navIntent ?? active);
-  if (reducedMotion.matches) {
+  if (reducedMotion.matches || compact.matches) {
     shot.style.removeProperty('transform');
     for (const scene of scenes) scene.style.removeProperty('--unfold');
     return;
@@ -388,6 +448,34 @@ if (/\b(?:Chrome|Chromium)\//.test(navigator.userAgent) && CSS.supports('backdro
   document.documentElement.dataset.glassRefraction = 'enabled';
 }
 
+const walkthrough = document.querySelector('#walkthrough');
+const recordingSources = [...walkthrough.querySelectorAll('[data-compact-src]')];
+const desktopRecordingSources = recordingSources.map(source => source.getAttribute('src'));
+
+function prepareRecording() {
+  const mobile = compact.matches;
+  walkthrough.poster = mobile ? walkthrough.dataset.compactPoster : walkthrough.dataset.poster;
+  walkthrough.preload = mobile ? 'none' : 'metadata';
+  let changed = false;
+  recordingSources.forEach((source, index) => {
+    const src = mobile ? source.dataset.compactSrc : desktopRecordingSources[index];
+    if (source.getAttribute('src') === src) return;
+    source.setAttribute('src', src);
+    changed = true;
+  });
+  if (changed) walkthrough.load();
+}
+
+if ('IntersectionObserver' in window) {
+  const prepareVideo = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    prepareVideo.disconnect();
+    prepareRecording();
+    compact.addEventListener('change', prepareRecording);
+  }, { rootMargin: '300px 0px' });
+  prepareVideo.observe(walkthrough);
+} else prepareRecording();
+
 const promptField = document.querySelector('#setup-prompt');
 const promptCopy = document.querySelector('#copy-setup');
 const copyStatus = document.querySelector('#copy-status');
@@ -404,7 +492,7 @@ function finishPrompt() {
   typingObserver?.disconnect();
 }
 
-if ('IntersectionObserver' in window && !reducedMotion.matches) {
+if ('IntersectionObserver' in window && !reducedMotion.matches && !compact.matches) {
   typingObserver = new IntersectionObserver(entries => {
     if (!entries.some(entry => entry.isIntersecting)) return;
     typingObserver.disconnect();
@@ -424,6 +512,19 @@ if ('IntersectionObserver' in window && !reducedMotion.matches) {
 
 promptField.addEventListener('focus', finishPrompt);
 reducedMotion.addEventListener('change', finishPrompt);
+function fitPrompt() {
+  promptField.style.removeProperty('height');
+  if (!compact.matches) return;
+  promptField.style.height = '0px';
+  promptField.style.height = promptField.scrollHeight + 'px';
+}
+promptField.addEventListener('input', fitPrompt);
+window.addEventListener('resize', fitPrompt, { passive: true });
+compact.addEventListener('change', () => {
+  finishPrompt();
+  fitPrompt();
+});
+fitPrompt();
 promptCopy.disabled = false;
 promptCopy.addEventListener('click', async () => {
   finishPrompt();
