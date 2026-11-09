@@ -136,7 +136,7 @@ window.fetch = async function fetchForPreview(input, init) {
   }
 };
 
-function waitFor(find, description) {
+function waitFor(find, description, timeoutMs = 9000) {
   return new Promise((resolve, reject) => {
     const initial = find();
     if (initial) {
@@ -147,7 +147,7 @@ function waitFor(find, description) {
     const timer = setTimeout(() => {
       observer.disconnect();
       reject(new Error(description));
-    }, 9000);
+    }, timeoutMs);
     function check() {
       const item = find();
       if (!item) return;
@@ -217,7 +217,8 @@ async function loadIntoReader() {
   }
 
   try {
-    await waitFor(() => renderedPage(1), '示例 PDF 未完成渲染');
+    // A cold load needs to fetch the PDF renderer and its worker.
+    await waitFor(() => renderedPage(1), '示例 PDF 未完成渲染', 30000);
   } finally {
     hidePoint();
   }
@@ -298,6 +299,7 @@ async function locateChapter() {
   const heading = await waitFor(
     () => [...document.querySelectorAll('.lrcp-tick')].find(button => (button.getAttribute('aria-label') || '').includes('Return to the Source')),
     '章节目录未加载',
+    30000,
   );
   const rect = heading.getBoundingClientRect();
   pointAt((rect.left + rect.right) * .5, (rect.top + rect.bottom) * .5);

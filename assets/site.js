@@ -20,7 +20,7 @@ function readerReady(restart) {
     const timeout = setTimeout(() => {
       frame.removeEventListener('load', loaded);
       reject(new Error('Gloss 演示没有加载'));
-    }, 9000);
+    }, 30000);
     function loaded() {
       clearTimeout(timeout);
       const preview = frame.contentWindow?.glossPreview;
