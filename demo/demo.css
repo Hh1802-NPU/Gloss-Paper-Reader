@@ -1,0 +1,71 @@
+:root {
+  color-scheme: light;
+  --dsw-alias-bg-base: #fff;
+  --dsw-alias-bg-layer-1: #f2f5f9;
+  --dsw-alias-bg-overlay: #fff;
+  --dsw-alias-label-primary: #24364d;
+  --dsw-alias-label-secondary: #59687d;
+  --dsw-alias-brand-primary: #326aba;
+  --dsw-alias-state-error-primary: #ad343c;
+}
+html, body, #root { height: 100%; margin: 0; }
+body { background: #f2f5f9; color: #24364d; font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+#root { min-width: 0; overflow: hidden; }
+.boot { margin: 0; display: grid; height: 100%; place-items: center; }
+#preview-cursor {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 2px solid #1d62c6;
+  background: rgba(167, 207, 255, .48);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .16s ease, transform .33s cubic-bezier(.22,.62,.24,1);
+}
+#preview-cursor.is-shown { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+@media (max-width: 700px) {
+  #root .lr-root .lr-body > .lr-source {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0;
+  }
+  #root .lr-root .lr-body > .lr-notes { min-width: 0; }
+}
+
+@media (max-width: 520px) {
+  #root .lr-root .lr-reader-chrome {
+    top: 8px;
+    left: 9px;
+    right: 9px;
+    min-height: 39px;
+    padding: 3px 6px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    align-items: center;
+    gap: 5px;
+    border-radius: 12px;
+    background: #eef3f9;
+  }
+  #root .lr-root .lr-reader-chrome > .lr-reader-leading { grid-column: 1; grid-row: 1; margin-left: 0; }
+  #root .lr-root .lr-reader-chrome > .lr-title-pill {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-height: 33px;
+    height: 33px;
+    justify-self: stretch;
+    transform: none;
+  }
+  #root .lr-root .lr-reader-chrome :is(.lr-header-actions, .lr-reader-controls, .lr-reader-panel) { display: none; }
+  #root .lr-root .lr-source-body.is-pdf { padding-top: 54px; scroll-padding-top: 61px; }
+}
+#preview-cursor.is-tracking { transition-property: opacity; }

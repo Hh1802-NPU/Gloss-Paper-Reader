@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN" data-platform="darwin">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data: blob:; font-src 'self' data: blob:; worker-src 'self' blob:; base-uri 'none'; form-action 'none'">
+  <title>Gloss · 示例阅读器</title>
+  <link rel="icon" href="../assets/gloss.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./demo.css">
+  <script defer src="./vendor/react.min.js"></script>
+  <script defer src="./vendor/react-dom.min.js"></script>
+  <script defer src="./bridge.js"></script>
+  <script defer src="./reader.js"></script>
+</head>
+<body>
+  <div id="root" data-global-panel="true"><p class="boot">正在打开 Gloss…</p></div>
+  <div id="preview-cursor" aria-hidden="true"></div>
+</body>
+</html>
