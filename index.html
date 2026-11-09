@@ -12,8 +12,8 @@
   <meta property="og:description" content="在浏览器中体验导入 PDF、划词翻译和章节定位。">
   <meta property="og:image" content="https://hh1802-npu.github.io/Gloss-Paper-Reader/assets/hero.webp">
   <link rel="icon" href="./assets/gloss.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./assets/site.css">
-  <script defer src="./assets/site.js?v=2"></script>
+  <link rel="stylesheet" href="./assets/site.css?v=3">
+  <script defer src="./assets/site.js?v=3"></script>
 </head>
 <body id="top">
   <a class="skip" href="#content">跳到内容</a>
@@ -63,8 +63,8 @@
       </div>
       <figure class="hero-image wrap" data-hero-image>
         <picture>
-          <source media="(max-width: 470px)" srcset="./assets/hero-mobile.webp">
-          <img src="./assets/hero.webp" width="1280" height="800" fetchpriority="high" alt="Gloss 阅读界面，左边显示示例论文原文和划词翻译浮窗，右边是论文阅读工具。">
+          <source media="(max-width: 700px), (max-width: 920px) and (pointer: coarse)" srcset="./assets/hero-mobile.webp?v=3" width="1134" height="1392">
+          <img src="./assets/hero.webp" width="1280" height="800" fetchpriority="high" alt="Gloss 阅读界面中的示例论文和划词译文。">
         </picture>
       </figure>
     </section>
@@ -80,14 +80,16 @@
           <div class="paper-tray">
             <div class="demo-paper" tabindex="0" role="group" aria-label="示例 PDF。拖进阅读器重演。用键盘时按空格提起，按向右或向下移入阅读器，再按空格放下。">
               <img src="./assets/sample-paper.webp" width="240" height="318" loading="lazy" draggable="false" alt="Reading with Source Links 首页">
+              <span class="paper-touch-hint"><strong>示例 PDF</strong><small>点按打开，也可拖入阅读器</small></span>
             </div>
           </div>
           <div class="demo-window">
-            <iframe id="demo-frame" aria-label="Gloss 插件交互演示" src="./demo/index.html?v=2" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+            <iframe id="demo-frame" aria-label="Gloss 插件交互演示" data-src="./demo/index.html?v=3" sandbox="allow-scripts allow-same-origin"></iframe>
             <div class="paper-drop-target" aria-hidden="true"></div>
           </div>
         </div>
         <span id="demo-status" class="visually-hidden" role="status"></span>
+        <noscript><p><a class="text-link" href="./demo/sample/reading-with-source-links.pdf">查看示例 PDF</a></p></noscript>
       </div>
     </section>
 
@@ -99,9 +101,9 @@
         </div>
 
         <figure class="reel" data-reveal>
-          <video id="walkthrough" controls playsinline preload="metadata" poster="./assets/reel-poster.webp" width="1280" height="800" aria-label="Gloss 导入 PDF、划词翻译、定位章节的连续录屏">
-            <source src="./assets/gloss-walkthrough.mp4" type="video/mp4">
-            <track kind="captions" src="./assets/gloss-walkthrough.vtt" srclang="zh-CN" label="简体中文" default>
+          <video id="walkthrough" controls playsinline preload="none" data-poster="./assets/reel-poster.webp" data-compact-poster="./assets/reel-poster-mobile.webp" width="1280" height="800" aria-label="Gloss 导入 PDF、划词翻译、定位章节的连续录屏">
+            <source src="./assets/gloss-walkthrough.mp4" data-compact-src="./assets/gloss-walkthrough-mobile.mp4" type="video/mp4">
+            <track kind="captions" src="./assets/gloss-walkthrough.vtt" data-compact-src="./assets/gloss-walkthrough-mobile.vtt" srclang="zh-CN" label="简体中文" default>
             <p><a href="./assets/gloss-walkthrough.mp4">下载操作录屏</a></p>
           </video>
         </figure>
