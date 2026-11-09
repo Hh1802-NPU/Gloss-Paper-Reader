@@ -7,6 +7,14 @@
 | macOS · Apple Silicon | [Gloss-1.1.0-macos-arm64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-macos-arm64.zip) | `Configure-Gloss.command` |
 | Windows · x64 | [Gloss-1.1.0-windows-x64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-windows-x64.zip) | `Configure-Gloss.cmd` |
 
+## 环境要求
+
+- 已启动过的 DeepSeek Harness Desktop。配置器优先使用宿主提供的 Node.js，其次使用系统已有的 Node.js。
+- Python 可导入 PyMuPDF 时，配置器会复用现有环境。需要新建专用环境时，Python 须为 3.11 或更新版本，架构与安装包匹配，并包含 `venv` 和 `ensurepip`。
+- 新建环境会安装 `requirements.txt` 固定的 PyMuPDF 2.0。首次安装需能访问依赖下载源。
+
+## 校验与配置
+
 在 ZIP 所在目录运行对应命令，将结果和发布清单中同名文件的 SHA-256 对照。校验不一致就停止，不要运行包内文件。
 
 ```sh
@@ -49,15 +57,13 @@ Agent 或用户从解压后的 `Gloss` 目录执行同一套步骤。
 
 <a name="agent-setup"></a>
 
-## 给 DeepSeek Agent 的安全配置提示词
+## Agent 配置须知
 
-把下面整段复制给能够操作本机的 Agent。如果只想检查，可单独发「请使用已校验并解压的 Gloss 1.1.0，只运行 `--check`。没有已校验的本地副本就告诉我，不下载、不安装、不修改设置」。
+收到 README 中的短提示词后，先通读本页，再按上面的环境要求、校验与配置步骤执行。
 
-> 请帮我在本机的 DeepSeek Harness Desktop 配置 Gloss 1.1.0。只使用官方发布页：https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/tag/v1.1.0 。先识别系统和架构，只选 macOS Apple Silicon 或 Windows x64 的对应安装 ZIP；不匹配就停止。下载同页 SHA-256 清单，核对同名文件后再解压到新的本地目录，保留原有安装。校验失败就停止，不运行包内文件。
->
-> 先按安装指南显式运行随包配置器的 `--check`。如果 `ok: true`，跳过依赖安装；只有 `ok: false` 且 `canInstall: true` 时，才运行随包配置器的 `--install`，写入 Gloss 专用环境，再运行 `--check`。不要使用管理员权限、全局 `pip`，也不要改 PATH、代理、安全设置或模型配置。如果需要另装 Python、覆盖已有插件、修改全局设置，或无法校验、定位失败，请停下来说明。
->
-> 检查通过后，使用宿主的「安装本地组合包」功能添加解压出来的 `Gloss`。如果无法安全完成这一步，请给我手动操作步骤。用可公开展示的 PDF 验证章节解析；若宿主可操作，再点一个出处核对 PDF 跳转。不要发送私人 PDF、密钥或账号资料。分别汇报下载校验、依赖检查、宿主启用和 PDF 验证的实际结果，不粘贴含本机绝对路径的原始日志。
+1. 从官方发布页选取对应平台的安装包。校验通过后解压到新目录，保留已有安装。系统不匹配或校验失败时停止。
+2. 用户只要求检查时，只对已校验并解压的副本运行 `--check`。完整配置也从 `--check` 开始，并按返回结果决定是否安装依赖。使用普通用户权限。需要另装 Python、覆盖已有插件或修改全局设置时，先说明原因和影响，等用户决定。
+3. 通过宿主的「安装本地组合包」功能启用插件。宿主操作不可用时，提供手动步骤。用公开 PDF 验证章节解析与出处跳转，分别报告下载校验、依赖检查、宿主启用和 PDF 验证的结果。报告中省略私人文件和日志中的本机路径、密钥及账号资料。
 
 <a name="verification"></a>
 
