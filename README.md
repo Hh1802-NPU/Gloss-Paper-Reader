@@ -5,7 +5,7 @@
 <h1 align="center">Gloss Paper Reader</h1>
 
 <p align="center"><strong>Gloss 是一款面向 DeepSeek Harness 的 AI 辅助论文阅读插件。</strong><br>
-打开 PDF 后，可以划词看译文、逐章精读，点击章节标题就能跳到对应的原文。 📖</p>
+划词翻译、章节精读、原文定位。</p>
 
 <p align="center">An AI-assisted academic PDF reader for DeepSeek Harness.<br>
 Contextual translation, chapter navigation, and Zotero integration.</p>
