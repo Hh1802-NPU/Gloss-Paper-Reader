@@ -33,8 +33,8 @@ Contextual translation, chapter navigation, and Zotero integration.</p>
 
 | 平台 | 安装包 | 解压后运行 |
 | --- | --- | --- |
-| macOS · Apple Silicon | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.0.0/Gloss-1.0.0-macos-arm64.zip) | `Configure-Gloss.command` |
-| Windows · x64 | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.0.0/Gloss-1.0.0-windows-x64.zip) | `Configure-Gloss.cmd` |
+| macOS · Apple Silicon | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-macos-arm64.zip) | `Configure-Gloss.command` |
+| Windows · x64 | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-windows-x64.zip) | `Configure-Gloss.cmd` |
 
 运行配置脚本后，在 DeepSeek Harness 的插件页安装并启用解压出来的 `Gloss` 本地组合包。 [完整安装指南](docs/INSTALL.md)
 

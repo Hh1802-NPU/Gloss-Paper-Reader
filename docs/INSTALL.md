@@ -1,11 +1,11 @@
 # 安装与配置
 
-安装并启动 DeepSeek Harness Desktop，按平台下载并解压对应的 ZIP。 [下载 Gloss 1.0.0](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/tag/v1.0.0)
+安装并启动 DeepSeek Harness Desktop，按平台下载并解压对应的 ZIP。 [下载 Gloss 1.1.0](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/tag/v1.1.0)
 
 | 系统 | 安装包 | 配置入口 |
 | --- | --- | --- |
-| macOS · Apple Silicon | [Gloss-1.0.0-macos-arm64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.0.0/Gloss-1.0.0-macos-arm64.zip) | `Configure-Gloss.command` |
-| Windows · x64 | [Gloss-1.0.0-windows-x64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.0.0/Gloss-1.0.0-windows-x64.zip) | `Configure-Gloss.cmd` |
+| macOS · Apple Silicon | [Gloss-1.1.0-macos-arm64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-macos-arm64.zip) | `Configure-Gloss.command` |
+| Windows · x64 | [Gloss-1.1.0-windows-x64.zip](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-windows-x64.zip) | `Configure-Gloss.cmd` |
 
 两个入口都可直接执行，或附加 `--check` 只检查环境。首次配置需要在本机下载约 63–67 MB 的 PyMuPDF 二进制包。ZIP 自身不含 Python 运行时或 PyMuPDF。当前固定版本的二进制包覆盖上述两种平台。 [PyMuPDF 2.0 下载列表](https://pypi.org/project/PyMuPDF/2.0/#files)
 
