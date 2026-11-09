@@ -6551,6 +6551,25 @@ html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-r
 @media(prefers-reduced-motion:reduce){.lr-research-conversation form.lr-ideas-composer,.lr-root section.lr-research-conversation form.lr-ideas-composer{transition:none}}
 @media(prefers-reduced-transparency:reduce),(prefers-contrast:more){.lr-research-conversation form.lr-ideas-composer,.lr-root section.lr-research-conversation form.lr-ideas-composer,.lr-research-conversation form.lr-ideas-composer:focus-within,.lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within{background:var(--lr-shell-ground,var(--dsw-alias-bg-overlay));backdrop-filter:none;-webkit-backdrop-filter:none}}
 
+/* The host's primary brand becomes nearly white in dark mode. Pair text with a dark surface. */
+body[data-ds-dark-theme] .lr-root .lr-ideas-message.is-user .lr-ideas-message-body {
+  background: color-mix(in srgb, var(--lr-shell-ink) 14%, var(--lr-shell-ground));
+  color: var(--lr-shell-ink);
+}
+body[data-ds-dark-theme] .lr-root section.lr-research-conversation form.lr-ideas-composer {
+  background: var(--lr-shell-raised);
+}
+body[data-ds-dark-theme] .lr-root section.lr-research-conversation form.lr-ideas-composer:focus-within {
+  background: var(--lr-shell-well);
+}
+body[data-ds-dark-theme] .lr-root section.lr-research-conversation textarea.lr-ideas-conversation-input {
+  color: var(--lr-shell-ink);
+  caret-color: currentColor;
+}
+body[data-ds-dark-theme] .lr-root section.lr-research-conversation textarea.lr-ideas-conversation-input::placeholder {
+  color: var(--lr-shell-muted);
+}
+
 /* One source-right anchor and two identical button bodies; resizing never morphs them. */
 .lr-root .lr-paper-stack{position:absolute;z-index:25;right:12px;top:var(--lr-reader-chrome-top,16px);display:grid;grid-auto-rows:var(--lr-reader-chip-height,36px);gap:6px;width:var(--lr-reader-chip-width,96px);margin:0;padding:0;pointer-events:none;transform:none;transition:none}
 .lr-root .lr-paper-stack.is-expanded{top:calc(var(--lr-reader-chrome-top,16px) + var(--lr-stack-expanded-y,42px))}
@@ -6674,6 +6693,15 @@ html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-r
       const [sessionBars, setSessionBars] = useState([])
       const [sessionListOpen, setSessionListOpen] = useState(false)
       const [chromeState, setChromeState] = useState(() => ({ ...initial.chromeState, titleCollapsed: false }))
+      const [darkTheme, setDarkTheme] = useState(() => document.body.hasAttribute('data-ds-dark-theme'))
+      useEffect(() => {
+        const body = document.body
+        const update = () => setDarkTheme(body.hasAttribute('data-ds-dark-theme'))
+        const observer = new MutationObserver(update)
+        observer.observe(body, { attributes: true, attributeFilter: ['data-ds-dark-theme'] })
+        update()
+        return () => observer.disconnect()
+      }, [])
       useEffect(() => { const owner = paper && paper.id; return () => { if (owner) pdfAppearanceCache.clearDocument(owner) } }, [paper && paper.id])
       const [referenceReturn, setReferenceReturn] = useState(null)
       const fileRef = useRef(null)
@@ -9223,7 +9251,8 @@ html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-r
         return h(TranslationCard, { popup, onClose: closePopup, onDismiss: closePopup, onCopy: copyText, getSourcePointer: () => popupPointerRef.current.documentId === popup.documentId ? popupPointerRef.current : null, onHighlight: (color, style) => setHighlight(color, style, popup.key), onPresentationChange: (value, height) => changePopupPresentation(value, height, popup.key), getPaperContext, onThreadChange: saveSelectionThread, onPopupSnapshot: (snapshot) => { const current = popupRef.current; if (current && current.key === snapshot.key && current.documentId === snapshot.documentId) recentPopupRef.current = { popup: { ...current, sessionSnapshot: snapshot }, origin: popupOriginRef.current, documentId: current.documentId } }, savedThread })
       }
 
-      const pdfAppearanceMode = pdfAppearance.mode(chromeState.pdfAppearance)
+      const pdfPalette = chromeState.pdfAppearanceOverride || 'follow'
+      const pdfAppearanceMode = pdfAppearance.mode(pdfPalette === 'follow' ? (darkTheme ? 'dark' : 'original') : pdfPalette)
       const floatingPaperChrome = Boolean(pdfDoc && sourceOpen)
       const titleCollapsed = Boolean(floatingPaperChrome && paper && chromeState.titleCollapsed)
       const titlePill = h('div', {
@@ -9308,7 +9337,7 @@ html[data-platform=darwin] .lr-root .lr-body .lr-notes :is(.lr-tab-lens, .lrcp-r
             titlePill,
             h('div', { className: 'lr-reader-controls', 'aria-label': '原文阅读控制', inert: titleCollapsed ? '' : undefined, 'aria-hidden': titleCollapsed || undefined },
               h('div', { className: 'lr-pdf-mode', role: 'group', 'aria-label': 'PDF 外观' },
-                [{ id: 'original', label: '原始' }, { id: 'dark', label: '深色' }].map((item) => h('button', { key: item.id, type: 'button', className: pdfAppearanceMode === item.id ? 'is-active' : '', disabled: titleCollapsed, 'aria-label': 'PDF ' + item.label + '模式', 'aria-pressed': pdfAppearanceMode === item.id, onClick: () => setChromeState((value) => ({ ...value, pdfAppearance: item.id })) }, item.label))),
+                [{ id: 'follow', label: '跟随', name: 'PDF 跟随主题' }, { id: 'original', label: '原始', name: 'PDF 原始模式' }].map((item) => h('button', { key: item.id, type: 'button', className: pdfPalette === item.id ? 'is-active' : '', disabled: titleCollapsed, 'aria-label': item.name, 'aria-pressed': pdfPalette === item.id, onClick: () => setChromeState((value) => ({ ...value, pdfAppearanceOverride: item.id })) }, item.label))),
               h('button', { type: 'button', className: 'lr-reader-button', disabled: titleCollapsed, 'aria-label': '缩小', title: '缩小', onClick: () => zoomBy(-.1) }, h(ToolIcon, { name: 'minus' })),
               h('span', { className: 'lr-zoom' }, Math.round((effectiveScale || 1) * 100) + '%'),
               h('button', { type: 'button', className: 'lr-reader-button', disabled: titleCollapsed, 'aria-label': '放大', title: '放大', onClick: () => zoomBy(.1) }, h(ToolIcon, { name: 'plus' })),
