@@ -36,16 +36,12 @@ Contextual translation, chapter navigation, and Zotero integration.</p>
 | macOS · Apple Silicon | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-macos-arm64.zip) | `Configure-Gloss.command` |
 | Windows · x64 | [下载 ZIP](https://github.com/Hh1802-NPU/Gloss-Paper-Reader/releases/download/v1.1.0/Gloss-1.1.0-windows-x64.zip) | `Configure-Gloss.cmd` |
 
-运行配置脚本后，在 DeepSeek Harness 的插件页安装并启用解压出来的 `Gloss` 本地组合包。 [完整安装指南](docs/INSTALL.md)
+先校验 ZIP 的 SHA-256，再解压并用 `--check` 检查环境。配置完成后，在 DeepSeek Harness 的插件页安装并启用 `Gloss` 本地组合包。 [完整安装指南](docs/INSTALL.md)
 
 <details>
 <summary>💬 让 DeepSeek 帮你操作</summary>
 
-把下面这段发给 DeepSeek Harness 中能操作本机的 Agent。
-
-> 请帮我在 DeepSeek Harness 中配置 Gloss-Paper-Reader。
->
-> https://github.com/Hh1802-NPU/Gloss-Paper-Reader
+把[安全配置提示词](docs/INSTALL.md#agent-setup)发给 DeepSeek Harness 中能操作本机的 Agent。提示词规定了下载来源、校验步骤、允许修改的范围，以及何时应停下来。 [查看 1.1.0 验证范围](docs/INSTALL.md#verification)
 
 </details>
 
