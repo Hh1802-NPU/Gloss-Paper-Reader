@@ -11,6 +11,7 @@
 Contextual translation, chapter navigation, and Zotero integration.</p>
 
 <p align="center">
+  <a href="https://hh1802-npu.github.io/Gloss-Paper-Reader/">🌐 官网与在线体验</a> ·
   <a href="#下载">⬇️ 下载 Gloss</a> ·
   <a href="docs/INSTALL.md">📦 安装指南</a>
 </p>
