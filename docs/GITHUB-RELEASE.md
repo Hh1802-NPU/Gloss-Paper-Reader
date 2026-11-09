@@ -68,16 +68,16 @@ git push -u origin gloss-setup-update
 
 ## 添加安装包
 
-仓库目标提交确定后，打开 GitHub 的 Releases，创建草稿并把 `v1.0.0` 标签关联到该提交。添加 `Gloss-1.0.0-macos-arm64.zip`、`Gloss-1.0.0-windows-x64.zip` 与 `Gloss-1.0.0-SHA256SUMS.txt`，写清各自的配置入口和验收范围。两个安装 ZIP 解压后以 `Gloss/` 为顶层目录。GitHub 根据标签生成的 `Source code` 压缩包供源码浏览和下载。 [GitHub Releases 操作说明](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
+仓库目标提交确定后，打开 GitHub 的 Releases，创建草稿并把 `v1.1.0` 标签关联到该提交。添加 `Gloss-1.1.0-macos-arm64.zip`、`Gloss-1.1.0-windows-x64.zip` 与 `Gloss-1.1.0-SHA256SUMS.txt`，写清各自的配置入口和验收范围。两个安装 ZIP 解压后以 `Gloss/` 为顶层目录。GitHub 根据标签生成的 `Source code` 压缩包供源码浏览和下载。 [GitHub Releases 操作说明](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 
 发布前可重新计算 ZIP 的 SHA-256，与随包提供的值对照。
 
 ```sh
-shasum -a 256 "Gloss-1.0.0-macos-arm64.zip"
+shasum -a 256 "Gloss-1.1.0-macos-arm64.zip"
 ```
 
 ```powershell
-Get-FileHash -Algorithm SHA256 -Path '.\Gloss-1.0.0-windows-x64.zip'
+Get-FileHash -Algorithm SHA256 -Path '.\Gloss-1.1.0-windows-x64.zip'
 ```
 
-Gloss 自有代码以公开源码形式发布，暂未授予开源许可。随附的第三方组件沿用各自的许可证。 [Gloss 第三方说明](THIRD_PARTY.md) · [GitHub 许可证说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
+Gloss 自有代码采用 MIT 许可证。分发时一并保留第三方组件的许可证与说明。 [Gloss 第三方说明](THIRD_PARTY.md) · [GitHub 许可证说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
