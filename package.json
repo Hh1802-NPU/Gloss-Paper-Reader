@@ -2,6 +2,7 @@
   "name": "@local/literature-reader",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Gloss: a PDF-first research reader with contextual translation, chapter explanations, research conversations and source-linked references.",
   "exports": {
@@ -28,6 +29,7 @@
     "vendor/library-resolver.js",
     "vendor/gloss-math/**",
     "docs/*.md",
+    "docs/assets/*",
     "requirements.txt",
     "setup.mjs"
   ],
